@@ -1,0 +1,207 @@
+<template>
+    <Head title="Agregar Conyugues"/>
+
+    <AuthenticatedLayout>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fa-solid fa-user-check me-2"></i>
+                <span class="fw-bolder">Agregar Conyugue para:</span> {{ cliente.nombres }} {{ cliente.apellidos }}
+            </div>
+
+            <div class="card-body">
+                <form @submit.prevent="submit">
+                    <!-- información del conyugue -->
+                    <h4 class="text-center">Información del Conyugue</h4>
+                    <hr>
+
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-4">
+                            <label for="cy_nombres" class="form-label">Nombres:</label>
+                            <input type="text" class="form-control" id="cy_nombres" v-model="form.cy_nombres">
+                            <div v-if="errors.cy_nombres">
+                                <p class="text-error">
+                                    {{ errors.cy_nombres }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="cy_apellidos" class="form-label">Apellidos:</label>
+                            <input type="text" class="form-control" id="cy_apellidos" v-model="form.cy_apellidos">
+                            <div v-if="errors.cy_apellidos">
+                                <p class="text-error">
+                                    {{ errors.cy_apellidos }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="cy_genero" class="form-label">Genero:</label>
+                            <select class="form-select" aria-label="Default select example" id="cy_genero" v-model="form.cy_genero">
+                                <option :value="null">Selecciona....</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Masculino">Masculino</option>
+                            </select>
+                            <div v-if="errors.cy_genero">
+                                <p class="text-error">
+                                    {{ errors.cy_genero }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12 col-md-4">
+                            <label for="cy_fechan" class="form-label">Fecha de Nacimiento</label>
+                            <datepicker class="vuejs3-datepicker-form-control" language="es" use-utc="true" format="dd/MMMM/yyyy" :full-month-name="true" id="cy_fechan" v-model="form.cy_fechan"></datepicker>
+                            <div v-if="errors.cy_fechan">
+                                <p class="text-error">
+                                    {{ errors.cy_fechan }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-4">
+                            <label for="cy_estatus" class="form-label">Estatus Legal:</label>
+                            <select class="form-select" aria-label="Default select example" id="cy_estatus" v-model="form.cy_estatus">
+                                <option :value="null">Selecciona....</option>
+                                <option value="Ciudadano">Ciudadano</option>
+                                <option value="Residente">Residente</option>
+                                <option value="Permiso de Trabajo">Permiso de Trabajo</option>
+                                <option value="Solicitud de Asilo">Solicitud de Asilo</option>
+                                <option value="Petición">Petición</option>
+                            </select>
+                            <div v-if="errors.cy_estatus">
+                                <p class="text-error">
+                                    {{ errors.cy_estatus }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="cy_ssn" class="form-label">Nro. Seguro Social:</label>
+                            <input type="text" class="form-control" id="cy_ssn" v-model="form.cy_ssn" placeholder="000-00-0000" autocomplete="off">
+                            <div v-if="errors.cy_ssn">
+                                <p class="text-error">
+                                    {{ errors.cy_ssn }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- fin información del conyugue -->
+
+
+
+                    <div class="container-fluid mt-4 text-center">
+                        <div class="d-grid">
+                            <div class="row">
+                                <Link class="col-6 btn btn-secondary" :href="route('nuevocliente.show' , cliente.id)">
+                                    Regresar
+                                </Link>
+                                <button type="submit" class="col-6 btn btn-primary">Siguiente</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </AuthenticatedLayout>
+</template>
+
+<script>
+
+    import { Link } from '@inertiajs/vue3'
+    import { router, useForm } from '@inertiajs/vue3'
+    import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+    import { Head } from '@inertiajs/vue3';
+
+    import Datepicker from 'vuejs3-datepicker';
+
+    export default {
+
+    data() {
+        return {
+
+        };
+    },
+
+    components:{
+        AuthenticatedLayout,
+        Head,
+        Link,
+        Datepicker,
+    },
+
+    props: {
+        cliente: Object,
+        errors: Object,
+    },
+
+    mounted(){
+
+        this.getmimascara();
+    },
+
+    methods:{
+
+        getmimascara(){
+            $(document).ready(function() {
+                $('#cy_ssn').mask('000-00-0000');
+            });
+        },
+    },
+
+    setup(props){
+        const form = useForm({
+            id: props.cliente.id,
+            cy_clienteid:null, cy_nombres: null, cy_apellidos: null, cy_genero: null, cy_fechan: null, cy_estatus: null, cy_ssn: null,
+
+        })
+
+        function submit(){
+            router.post(route('nuevocliente.storeconyugue', form.id), form);
+        }
+
+        return { form, submit };
+    }
+
+
+
+}
+</script>
+
+<style>
+.vuejs3-datepicker__value{
+    width: 100%;
+    padding: 6px 5px 6px 17px !important;
+    border: none !important;
+}
+
+.vuejs3-datepicker__inputvalue {
+    width: 100%;
+    padding: 6px 5px 6px 35px !important;
+    border: none !important;
+}
+
+.vuejs3-datepicker-form-control {
+    display: block;
+    width: 100%;
+    font-size: 1.52rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.vuejs3-datepicker__calendar .cell.day-header {
+    font-size: 1rem !important;
+}
+
+</style>
